@@ -1,14 +1,13 @@
 import { Anthropic } from "@anthropic-ai/sdk";
-import { getPrompt } from "./utils";
-import type { AssistantResponse } from "./types";
+import { getEnv, getPrompt } from "../utils";
+import type { AssistantResponse } from "../types";
 
-export class AssistantClaude {
-    private key = "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" 
+export class ClaudeAssistant {
     private anthropic: Anthropic 
 
     constructor() {
         this.anthropic = new Anthropic({
-            apiKey: this.key
+            apiKey: getEnv("ANTHROPIC_API_KEY")
         });
     }
     

@@ -1,11 +1,12 @@
 import OpenAI from "openai";
-import { getEnv, getPrompt } from "./utils";
-import type { AssistantResponse } from "./types";
+import { getEnv, getPrompt } from "../utils";
+import type { AssistantResponse } from "../types";
+import type { Assistant } from ".";
 
 const OPENAI_API_KEY = getEnv("OPEN_AI_KEY");
 const NAME = getEnv("ASSISTANT_NAME");
 
-export default class Assistant {
+export default class GPTAssistant implements Assistant {
     private openai: OpenAI;
     private assistantId?: string;
     private threadId?: string;
@@ -82,5 +83,10 @@ export default class Assistant {
         catch (e) {
             throw new Error("Invalid response from assistant: " + response);
         }
+    }
+
+    async correct(code: string, issue: string): Promise<AssistantResponse> {
+        const msg = `${code}. The issue is ${issue}. Give me a correction that will fix the issue and make sure that the code runs properly without unix errors. Just the code inside the json, no explanations`
+        return await this.ask(msg)
     }
 }
