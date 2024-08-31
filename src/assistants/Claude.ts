@@ -4,6 +4,7 @@ import type { AssistantResponse } from "../types";
 
 export class ClaudeAssistant {
     private anthropic: Anthropic 
+    private history: Anthropic.MessageParam[] = []
 
     constructor() {
         this.anthropic = new Anthropic({
@@ -18,6 +19,7 @@ export class ClaudeAssistant {
             temperature: 0,
             system: getPrompt(),
             messages: [
+              ...this.history,
               {
                 "role": "user",
                 "content": [
@@ -34,6 +36,9 @@ export class ClaudeAssistant {
         const result =  msg.content[0].text
         const parsed = result.replace(/(\r\n|\n|\r)/gm, "")
 
+        this.pushToHistory(question, "user")
+        this.pushToHistory(result, "assistant")
+
         try {
             return JSON.parse(parsed) as AssistantResponse
         }
@@ -46,5 +51,17 @@ export class ClaudeAssistant {
     async correct(code: string, issue: string): Promise<AssistantResponse> {
         const msg = `${code}. The issue is ${issue}. Give me a correction that will fix the issue and make sure that the code runs properly without unix errors. Just the code inside the json, no explanations`
         return await this.ask(msg)
+    }
+
+    private pushToHistory(messageStr: string, from: "user" | "assistant") {
+        this.history.push({
+            role: from,
+            content: [
+                {
+                    type: "text",
+                    text: messageStr
+                }
+            ]
+        })
     }
 }

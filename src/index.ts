@@ -5,9 +5,9 @@ import { ClaudeAssistant } from "./assistants/Claude";
 import GPTAssistant from "./assistants/Gpt";
 
 async function main() {
-  // const assistant = new ClaudeAssistant();
-  const assistant = new GPTAssistant();
-  await assistant.initSession();
+  const assistant = new ClaudeAssistant();
+  // const assistant = new GPTAssistant();
+  // await assistant.initSession();
 
   askQuestion(assistant);
 }
@@ -60,6 +60,7 @@ async function handleCommand(assistant: Assistant, command: string, attempts = 0
       }
       
       console.error(`Error running command. Attempt ${attempts + 1}/${MAX_ATTEMPTS}. Correcting`);
+
       // @ts-ignore
       const correction = await assistant.correct(command, e.message);
       console.log("Correction:", correction.result);
