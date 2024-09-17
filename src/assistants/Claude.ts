@@ -14,7 +14,7 @@ export class ClaudeAssistant {
     
     async ask(question: string): Promise<AssistantResponse> {
         const msg = await this.anthropic.messages.create({
-            model: "claude-3-opus-20240229",
+            model: "claude-3-sonnet-20240229",
             max_tokens: 1000,
             temperature: 0,
             system: getPrompt(),
@@ -25,7 +25,7 @@ export class ClaudeAssistant {
                 "content": [
                   {
                     "type": "text",
-                    "text": question
+                    "text": `${question}. Only json response as discussed please`
                   }
                 ]
               }
