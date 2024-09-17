@@ -18,22 +18,33 @@ export default class GPTAssistant implements Assistant {
     }
 
     async initSession() {
-        this.assistantId = await this.createAssistantIfNeeded(NAME)
+        // Uncomment to create new assistant from Prompt.MD if the assistant does not exist
+        //this.assistantId = await this.createAssistantIfNeeded(NAME)
+        const assistantId = await this.assistantExists(NAME)
+        if (!assistantId) {
+            throw new Error("Assistant not found");
+        }
+        console.log(`Initialized assistant with assistantId: ${assistantId} and name: ${NAME}`)
+        this.assistantId = assistantId
 
         const thread = await this.openai.beta.threads.create();
         this.threadId = thread.id;
     }
 
-    async createAssistantIfNeeded(name: string): Promise<string> {
+    async assistantExists(name: string): Promise<string | null> {
         const assistants = await this.openai.beta.assistants.list();
         const relevant = assistants.data.filter(a => a.name == name).pop();
-        if (relevant) {
+        return relevant ? relevant.id : null
+    }
+
+    async createAssistantIfNeeded(name: string): Promise<string> {
+        const assistandId = await this.assistantExists(name)
+        if (assistandId) {
             console.log("Assistant already exists", name)
-            return relevant.id;
+            return assistandId
         }
 
-
-        console.log("Creating new assistant with name")
+        console.log("Creating new assistant with name", name)
 
         const assistant = await this.openai.beta.assistants.create({
             name,
