@@ -7,9 +7,8 @@ import ora from "ora";
 import chalk from "chalk";
 
 async function main() {
-  const assistant = new ClaudeAssistant();
-  // const assistant = new GPTAssistant();
-  // await assistant.initSession();
+  const assistant = new GPTAssistant();
+  await assistant.initSession();
 
   askQuestion(assistant);
 }
@@ -52,6 +51,10 @@ async function handleRequest(assistant: Assistant, question: string) {
           const res = await handleCommand(assistant, answer.result, 0);
           console.log(chalk.bgGreen("Output:"));
           console.log(res);
+        break;
+    case "answer":
+          console.log("\n" + chalk.greenBright("Assistant has an answer"));
+          console.log(answer.result);
         break;
     case "question":
           console.log("\n" + chalk.magentaBright("Assistant has a question"));
