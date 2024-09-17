@@ -1,4 +1,6 @@
+export type AnswerType = 'command' | 'answer' | 'question' | 'rejection';
+
 export type AssistantResponse = {
-  type: "command" | "question" | "rejection" | "answer";
+  type: AnswerType;
   result: string;
 };

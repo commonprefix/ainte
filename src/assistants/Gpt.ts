@@ -28,30 +28,6 @@ export default class GPTAssistant implements Assistant {
     this.threadId = thread.id;
   }
 
-  async assistantExists(name: string): Promise<string | null> {
-    const assistants = await this.openai.beta.assistants.list();
-    const relevant = assistants.data.filter((a) => a.name == name).pop();
-    return relevant ? relevant.id : null;
-  }
-
-  async createAssistantIfNeeded(name: string): Promise<string> {
-    const assistandId = await this.assistantExists(name);
-    if (assistandId) {
-      console.log("Assistant already exists", name);
-      return assistandId;
-    }
-
-    console.log("Creating new assistant with name", name);
-
-    const assistant = await this.openai.beta.assistants.create({
-      name,
-      instructions: getPrompt(),
-      model: "gpt-4o",
-    });
-
-    return assistant.id;
-  }
-
   async ask(question: string): Promise<AssistantResponse> {
     if (!this.assistantId || !this.threadId) {
       throw new Error("Assistant not initialized");
@@ -90,4 +66,30 @@ export default class GPTAssistant implements Assistant {
     const msg = `${code}. The issue is ${issue}. Give me a correction that will fix the issue and make sure that the code runs properly without unix errors. Just the code inside the json, no explanations`;
     return await this.ask(msg);
   }
+
+
+  private async assistantExists(name: string): Promise<string | null> {
+    const assistants = await this.openai.beta.assistants.list();
+    const relevant = assistants.data.filter((a) => a.name == name).pop();
+    return relevant ? relevant.id : null;
+  }
+
+  private async createAssistantIfNeeded(name: string): Promise<string> {
+    const assistandId = await this.assistantExists(name);
+    if (assistandId) {
+      console.log("Assistant already exists", name);
+      return assistandId;
+    }
+
+    console.log("Creating new assistant with name", name);
+
+    const assistant = await this.openai.beta.assistants.create({
+      name,
+      instructions: getPrompt(),
+      model: "gpt-4o",
+    });
+
+    return assistant.id;
+  }
+
 }
