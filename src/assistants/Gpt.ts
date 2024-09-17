@@ -67,6 +67,17 @@ export default class GPTAssistant implements Assistant {
     return await this.ask(msg);
   }
 
+  async appendOutput(output: string): Promise<void> { 
+    if (!this.threadId) {
+      throw new Error("Assistant not initialized");
+    }
+
+    const msg = `Here is the output of the previous command you posted: ${output}`;
+    await this.openai.beta.threads.messages.create(this.threadId, {
+      role: "user",
+      content: msg,
+    });
+  }
 
   private async assistantExists(name: string): Promise<string | null> {
     const assistants = await this.openai.beta.assistants.list();
