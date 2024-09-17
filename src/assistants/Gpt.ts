@@ -3,28 +3,23 @@ import { getEnv, getPrompt } from "../utils";
 import type { AssistantResponse } from "../types";
 import type { Assistant } from ".";
 
-const OPENAI_API_KEY = getEnv("OPEN_AI_KEY");
-const NAME = getEnv("ASSISTANT_NAME");
-
 export default class GPTAssistant implements Assistant {
     private openai: OpenAI;
     private assistantId?: string;
     private threadId?: string;
 
-    constructor() {
-        this.openai = new OpenAI({
-            apiKey: OPENAI_API_KEY
-        });
+    constructor(apiKey: string) {
+        this.openai = new OpenAI({ apiKey });
     }
 
-    async initSession() {
+    async initSession(assistantName: string) {
         // Uncomment to create new assistant from Prompt.MD if the assistant does not exist
         //this.assistantId = await this.createAssistantIfNeeded(NAME)
-        const assistantId = await this.assistantExists(NAME)
+        const assistantId = await this.assistantExists(assistantName)
         if (!assistantId) {
             throw new Error("Assistant not found");
         }
-        console.log(`Initialized assistant with assistantId: ${assistantId} and name: ${NAME}`)
+        console.log(`Initialized assistant with assistantId: ${assistantId} and name: ${assistantName}`)
         this.assistantId = assistantId
 
         const thread = await this.openai.beta.threads.create();
