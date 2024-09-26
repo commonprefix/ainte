@@ -1,18 +1,26 @@
-import { $ } from "bun";
+import { spawn } from 'child_process';
+import type { CommandResult } from "./types";
 
-export async function runCommand(command: string) {
-  try {
-    // Hacky way to capture both stdout and stderr
-    const { stdout } = await $`/bin/sh -c "{ ${command}; } 2>&1"`;
-    const output = stdout.toString().trim();
-    
-    // Check if the output contains an error message
-    if (output.toLowerCase().includes("error")) {
-      throw new Error(output);
-    }
-    
-    return output;
-  } catch (error: any) {
-    throw new Error(error.message);
-  }
+export function runCommand(command: string): Promise<CommandResult> {
+  return new Promise((resolve, reject) => {
+      const childProcess = spawn('/bin/sh', ['-c', command]);
+      let stdout = '';
+      let stderr = '';
+
+      childProcess.stdout.on('data', (data: Buffer) => {
+          stdout += data.toString();
+      });
+
+      childProcess.stderr.on('data', (data: Buffer) => {
+          stderr += data.toString();
+      });
+
+      childProcess.on('close', (code: number) => {
+          resolve({ command, output: stdout, error: stderr });
+      });
+
+      childProcess.on('error', (error: Error) => {
+          reject({ command, output: '', error: error.message });
+      });
+  });
 }
