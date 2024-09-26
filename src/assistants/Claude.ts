@@ -52,6 +52,20 @@ export class ClaudeAssistant {
     return await this.ask(msg);
   }
 
+  async appendOutput(output: string): Promise<void> {
+    const msg = `Here is the output of the code: ${output}`;
+    this.history.push({
+      role: "user",
+      content: [
+        {
+          type: "text",
+          text: msg,
+        },
+      ],
+    });
+  }
+
+
   private pushToHistory(messageStr: string, from: "user" | "assistant") {
     this.history.push({
       role: from,
