@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { getEnv, getPrompt } from "../utils";
 import type { AssistantResponse } from "../types";
 import type { Assistant } from ".";
+import chalk from "chalk";
 
 export default class GPTAssistant implements Assistant {
   private openai: OpenAI;
@@ -20,7 +21,7 @@ export default class GPTAssistant implements Assistant {
       throw new Error("Assistant not found");
     }
     console.log(
-      `Initialized assistant with assistantId: ${assistantId} and name: ${assistantName}`,
+      chalk.green(`Initialized assistant with assistantId: ${assistantId} and name: ${assistantName}`),
     );
     this.assistantId = assistantId;
 
@@ -43,7 +44,7 @@ export default class GPTAssistant implements Assistant {
     });
 
     if (run.status != "completed") {
-      throw Error("Run not completed");
+      throw Error("Run not completed: " + run.status);
     }
 
     const messages = await this.openai.beta.threads.messages.list(

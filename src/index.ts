@@ -11,7 +11,7 @@ async function main() {
   await assistant.initSession(ASSISTANT_NAME);
 
   const cli = new Cli(assistant);
-  await cli.spawn();
+  await cli.spawn()
 }
 
 main().catch((e: any) => {
