@@ -67,7 +67,7 @@ Apart from these basic functionalities, it also:
 ## Setting Up
 
 1. Make sure that you have bun, foundry, curl, jq and node v20 or higher installed.
-    - Install Node v20 or higher, because we're using `node --env-file` which we bet you didn't know it exists. 🙋🏼‍♀️
+    - Install Node v20 or higher, because we were borded to install `dotenv` and we're using `node --env-file` which we bet you didn't know it exists. 🙋🏼‍♀️
     - For foundry: `curl -L https://foundry.paradigm.xyz | bash && foundryup`
     - For the rest of the packages: 
         - On MacOS with Homebrew: `brew install bun jq`
@@ -103,9 +103,18 @@ The tool is currently implemented as a Command Line Interface (CLI) that provide
 - To provide additional context, ask relevant questions before stating your main task. For example, instead of directly asking "Get me the calldata of this transaction for this contract," first inquire "What is the interface of this contract?" This approach ensures the assistant has the necessary information (like the ABI) in context before you request the calldata.
 - If the assistant makes a mistake that it cannot fix in the first iterations, use the `/retry` command to make it try again. You can also just rephrase the question, or ask it to "please fix the previous output".
 
-## For contributors
+## Contributors
+
 We'd love to get contributions from the community! Make sure to check the [issues](https://github.com/commonprefix/ainte/issues) and [pull requests](https://github.com/commonprefix/ainte/pulls) to see if there's anything you'd like to work on.
 
-Also, feel free to open issues while battling with the assistant or asking for new features.
+Needless to say, issues and PRs are more than welcome!
 
-For more details about the codebase, or any suggestions reach out g
+Finally, feel free to join our [telegram group](https://t.me/aintecli) where all the fun will be happening, or reach out to us on [X](https://x.com/commonprefix) if you have any questions! 🚀
+
+## Acknowledgements
+
+- [OpenAI](https://openai.com/) for making accessible the most revolutionary technology of our times.
+- [Foundry](https://github.com/foundry-rs/foundry) for making the development of this tool easier.
+- [ArcanEdge](https://www.arcanedge.ai/) for helping us with the LLM stuff since we do blockchains for a living.
+
+From [CommonPrefix](https://commonprefix.com) with ❤️
