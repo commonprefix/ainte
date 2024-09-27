@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { getEnv, getPrompt } from "../utils";
+import { getPrompt } from "../utils";
 import type { AssistantResponse } from "../types";
 import type { Assistant } from ".";
 import chalk from "chalk";
@@ -79,10 +79,19 @@ export default class GPTAssistant implements Assistant {
         }
 
         const msg = `Here is the output of the previous command you posted: ${output}`;
-        await this.openai.beta.threads.messages.create(this.threadId, {
-            role: "user",
-            content: msg,
-        });
+        try {
+            await this.openai.beta.threads.messages.create(this.threadId, {
+                role: "user",
+                content: msg,
+            });
+        } catch (e: any) {
+            // TODO: Fix error handling
+            console.log(
+                chalk.red(
+                    "Will not append output, because it is too long",
+                ),
+            );
+        }
     }
 
     private async assistantExists(name: string): Promise<string | null> {
