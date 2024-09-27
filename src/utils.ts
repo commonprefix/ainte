@@ -7,7 +7,7 @@ const PROMPT_FILE = "prompt.md";
 export function getEnv(key: string, _default?: string) {
     const value = process.env[key];
     if (!value && !_default) {
-        throw new Error(`Missing environment variable ${key}`);
+        throw new Error(`Missing environment variable ${key}. Please set it in the .env file.`);
     }
     return value || _default || "";
 }
