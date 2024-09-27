@@ -4,13 +4,13 @@ import fs from "fs";
 const PROMPT_FILE = "prompt.md";
 
 export function getEnv(key: string, _default?: string) {
-  const value = process.env[key];
-  if (!value && !_default) {
-    throw new Error(`Missing environment variable ${key}`);
-  }
-  return value || _default || "";
+    const value = process.env[key];
+    if (!value && !_default) {
+        throw new Error(`Missing environment variable ${key}`);
+    }
+    return value || _default || "";
 }
 
 export function getPrompt(): string {
-  return fs.readFileSync(PROMPT_FILE, "utf8");
+    return fs.readFileSync(PROMPT_FILE, "utf8");
 }

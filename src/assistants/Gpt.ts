@@ -5,103 +5,107 @@ import type { Assistant } from ".";
 import chalk from "chalk";
 
 export default class GPTAssistant implements Assistant {
-  private openai: OpenAI;
-  private assistantId?: string;
-  private threadId?: string;
+    private openai: OpenAI;
+    private assistantId?: string;
+    private threadId?: string;
 
-  constructor(apiKey: string) {
-    this.openai = new OpenAI({ apiKey });
-  }
-
-  async initSession(assistantName: string) {
-    // Uncomment to create new assistant from Prompt.MD if the assistant does not exist
-    //this.assistantId = await this.createAssistantIfNeeded(NAME)
-    const assistantId = await this.assistantExists(assistantName);
-    if (!assistantId) {
-      throw new Error("Assistant not found");
-    }
-    console.log(
-      chalk.green(`Initialized assistant with assistantId: ${assistantId} and name: ${assistantName}`),
-    );
-    this.assistantId = assistantId;
-
-    const thread = await this.openai.beta.threads.create();
-    this.threadId = thread.id;
-  }
-
-  async ask(question: string): Promise<AssistantResponse> {
-    if (!this.assistantId || !this.threadId) {
-      throw new Error("Assistant not initialized");
+    constructor(apiKey: string) {
+        this.openai = new OpenAI({ apiKey });
     }
 
-    await this.openai.beta.threads.messages.create(this.threadId, {
-      role: "user",
-      content: question,
-    });
+    async initSession(assistantName: string) {
+        // Uncomment to create new assistant from Prompt.MD if the assistant does not exist
+        //this.assistantId = await this.createAssistantIfNeeded(NAME)
+        const assistantId = await this.assistantExists(assistantName);
+        if (!assistantId) {
+            throw new Error("Assistant not found");
+        }
+        console.log(
+            chalk.green(
+                `Initialized assistant with assistantId: ${assistantId} and name: ${assistantName}`,
+            ),
+        );
+        this.assistantId = assistantId;
 
-    let run = await this.openai.beta.threads.runs.createAndPoll(this.threadId, {
-      assistant_id: this.assistantId,
-    });
-
-    if (run.status != "completed") {
-      throw Error("Run not completed: " + run.status);
+        const thread = await this.openai.beta.threads.create();
+        this.threadId = thread.id;
     }
 
-    const messages = await this.openai.beta.threads.messages.list(
-      run.thread_id,
-    );
+    async ask(question: string): Promise<AssistantResponse> {
+        if (!this.assistantId || !this.threadId) {
+            throw new Error("Assistant not initialized");
+        }
 
-    const message = messages.data[0];
-    const content = message.content[0];
-    // @ts-ignore
-    const response = content["text"]["value"];
+        await this.openai.beta.threads.messages.create(this.threadId, {
+            role: "user",
+            content: question,
+        });
 
-    try {
-      return JSON.parse(response) as AssistantResponse;
-    } catch (e) {
-      throw new Error("Invalid response from assistant: " + response);
-    }
-  }
+        let run = await this.openai.beta.threads.runs.createAndPoll(
+            this.threadId,
+            {
+                assistant_id: this.assistantId,
+            },
+        );
 
-  async correct(code: string, issue: string): Promise<AssistantResponse> {
-    const msg = `${code}. The issue is ${issue}. Give me a correction that will fix the issue and make sure that the code runs properly without unix errors. Just the code inside the json, no explanations`;
-    return await this.ask(msg);
-  }
+        if (run.status != "completed") {
+            throw Error("Run not completed: " + run.status);
+        }
 
-  async appendOutput(output: string): Promise<void> { 
-    if (!this.threadId) {
-      throw new Error("Assistant not initialized");
-    }
+        const messages = await this.openai.beta.threads.messages.list(
+            run.thread_id,
+        );
 
-    const msg = `Here is the output of the previous command you posted: ${output}`;
-    await this.openai.beta.threads.messages.create(this.threadId, {
-      role: "user",
-      content: msg,
-    });
-  }
+        const message = messages.data[0];
+        const content = message.content[0];
+        // @ts-ignore
+        const response = content["text"]["value"];
 
-  private async assistantExists(name: string): Promise<string | null> {
-    const assistants = await this.openai.beta.assistants.list();
-    const relevant = assistants.data.filter((a) => a.name == name).pop();
-    return relevant ? relevant.id : null;
-  }
-
-  private async createAssistantIfNeeded(name: string): Promise<string> {
-    const assistandId = await this.assistantExists(name);
-    if (assistandId) {
-      console.log("Assistant already exists", name);
-      return assistandId;
+        try {
+            return JSON.parse(response) as AssistantResponse;
+        } catch (e) {
+            throw new Error("Invalid response from assistant: " + response);
+        }
     }
 
-    console.log("Creating new assistant with name", name);
+    async correct(code: string, issue: string): Promise<AssistantResponse> {
+        const msg = `${code}. The issue is ${issue}. Give me a correction that will fix the issue and make sure that the code runs properly without unix errors. Just the code inside the json, no explanations`;
+        return await this.ask(msg);
+    }
 
-    const assistant = await this.openai.beta.assistants.create({
-      name,
-      instructions: getPrompt(),
-      model: "gpt-4o",
-    });
+    async appendOutput(output: string): Promise<void> {
+        if (!this.threadId) {
+            throw new Error("Assistant not initialized");
+        }
 
-    return assistant.id;
-  }
+        const msg = `Here is the output of the previous command you posted: ${output}`;
+        await this.openai.beta.threads.messages.create(this.threadId, {
+            role: "user",
+            content: msg,
+        });
+    }
 
+    private async assistantExists(name: string): Promise<string | null> {
+        const assistants = await this.openai.beta.assistants.list();
+        const relevant = assistants.data.filter((a) => a.name == name).pop();
+        return relevant ? relevant.id : null;
+    }
+
+    private async createAssistantIfNeeded(name: string): Promise<string> {
+        const assistandId = await this.assistantExists(name);
+        if (assistandId) {
+            console.log("Assistant already exists", name);
+            return assistandId;
+        }
+
+        console.log("Creating new assistant with name", name);
+
+        const assistant = await this.openai.beta.assistants.create({
+            name,
+            instructions: getPrompt(),
+            model: "gpt-4o",
+        });
+
+        return assistant.id;
+    }
 }

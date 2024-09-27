@@ -1,23 +1,27 @@
 {
-  "name": "robot",
-  "module": "index.ts",
-  "type": "module",
-  "scripts": {
-    "dev": "bun --env-file .env src/index.ts",
-    "build": "bun build ./src/index.ts --outdir ./build --target node",
-    "start": "bun run build && ls -a && node --env-file .env build/index.js"
-  },
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@anthropic-ai/sdk": "^0.27.1",
-    "chalk": "^5.3.0",
-    "inquirer": "^10.1.8",
-    "openai": "^4.57.0",
-    "ora": "^8.1.0"
-  }
+    "name": "robot",
+    "module": "index.ts",
+    "type": "module",
+    "scripts": {
+        "dev": "bun --env-file .env src/index.ts",
+        "build": "bun build ./src/index.ts --outdir ./build --target node",
+        "start": "bun run build && ls -a && node --env-file .env build/index.js"
+    },
+    "prettier": {
+        "tabWidth": 4,
+        "useTabs": false
+    },
+    "devDependencies": {
+        "@types/bun": "latest"
+    },
+    "peerDependencies": {
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@anthropic-ai/sdk": "^0.27.1",
+        "chalk": "^5.3.0",
+        "inquirer": "^10.1.8",
+        "openai": "^4.57.0",
+        "ora": "^8.1.0"
+    }
 }
