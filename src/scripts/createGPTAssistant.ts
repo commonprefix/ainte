@@ -13,7 +13,7 @@ import ora from "ora";
 
 type KnowledgeBase = Record<string, fs.ReadStream>
 
-const KNOWLEDGE_BASE_PATH = "./knowledge_base";
+const KNOWLEDGE_BASE_PATH = "./ai/knowledge_base";
 const VECTOR_STORE_NAME = "Ainte Knowledge Base";
 const API_KEY = getEnv("OPENAI_API_KEY");
 const openai = new OpenAI({ apiKey: API_KEY });
@@ -46,14 +46,13 @@ async function main() {
  */
 async function createAssistant(name: string, vectorStoreId: string): Promise<string> {
     const assistants = await openai.beta.assistants.list();
-    console.log(assistants);
-    const assistantFound = assistants.data.find((assistant) => assistant.name === name);
-    if (assistantFound) {
+    let assistant = assistants.data.find((assistant) => assistant.name === name);
+    if (assistant) {
         console.log(chalk.yellowBright(`Assistant already exists: ${name}.\nIf there are changes in the knowledge base, delete the assistant [https://platform.openai.com/assistants] and rerun the script`));
-        return assistantFound.id;
+        return assistant.id;
     }
 
-    const assistant = await openai.beta.assistants.create({
+    assistant = await openai.beta.assistants.create({
         name,
         instructions: getPrompt(),
         model: "gpt-4o",

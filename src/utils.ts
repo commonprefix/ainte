@@ -2,7 +2,7 @@ import chalk from "chalk";
 import fs from "fs";
 import type { MessageHistory } from "./types";
 
-const PROMPT_FILE = "prompt.md";
+const PROMPT_FILE = "ai/prompt.md";
 
 export function getEnv(key: string, _default?: string) {
     const value = process.env[key];
