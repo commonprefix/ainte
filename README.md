@@ -50,7 +50,7 @@ Currently this is a proof of concept that shows that it is possible to interact 
     1. Get me the last uniswap v3 transaction.
     2. Decode the calldata of this transaction.
     3. What is this function call exactly?
-
+    ---
     1. Get me the transactions of the latest block
     2. What is the total amount transferred in this block?
     3. Give me this amount in Ether
