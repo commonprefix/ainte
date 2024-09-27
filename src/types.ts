@@ -10,3 +10,8 @@ export type CommandResult = {
     output: string;
     error: string;
 };
+
+export type MessageHistory = {
+    role: "user" | "assistant";
+    content: string;
+}[];

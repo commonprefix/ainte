@@ -18,3 +18,7 @@ export function getPrompt(): string {
 export function stripAnsiCodes(output: string) {
     return output.replace(/\u001b\[\d+;?\d*m/g, '');
 }
+
+export function stripString(input: string) {
+    return input.replace(/\\n|\\r|\\t/g, '').replace(/\\"/g, '"');
+}

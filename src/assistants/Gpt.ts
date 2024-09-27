@@ -1,6 +1,6 @@
 import OpenAI from "openai";
-import { getPrompt } from "../utils";
-import type { AssistantResponse } from "../types";
+import { getPrompt, stripString } from "../utils";
+import type { AssistantResponse, MessageHistory } from "../types";
 import type { Assistant } from ".";
 import chalk from "chalk";
 
@@ -81,7 +81,7 @@ export default class GPTAssistant implements Assistant {
             throw new Error("Assistant not initialized");
         }
 
-        const msg = `Here is the output of the previous command you posted: ${output}`;
+        const msg = `Here is the output of the previous command you posted:\n${output}`;
         try {
             await this.openai.beta.threads.messages.create(this.threadId, {
                 role: "user",
@@ -95,6 +95,20 @@ export default class GPTAssistant implements Assistant {
                 ),
             );
         }
+    }
+
+    async getHistory(): Promise<MessageHistory> {
+        if (!this.threadId) {
+            throw new Error("Assistant not initialized");
+        }
+
+        const messages = await this.openai.beta.threads.messages.list(this.threadId)
+
+        return messages.data.reverse().map((m) => ({
+            role: m.role,
+            // @ts-ignore
+            content: stripString(m.content[0]?.text?.value ?? "")
+        }));
     }
 
     getLastOutput(): string {
