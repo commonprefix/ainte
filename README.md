@@ -2,8 +2,9 @@
 
 **An illegally-made, genetically-engineered, extraterrestrial lifeform which interacts with Ethereum**
 
-![](./logo.png)
-
+<p align="center">
+    <img src="./logo.svg" width="500" height="500" alight=>
+</p>
 
 ## What is Ainte
 
