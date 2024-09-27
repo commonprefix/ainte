@@ -1,7 +1,12 @@
 import { Anthropic } from "@anthropic-ai/sdk";
 import { getEnv, getPrompt } from "../utils";
 import type { AssistantResponse } from "../types";
+import { logRed } from "../logger";
 
+/**
+ * This is a dead code of a Claude assistant implementation.
+ * Unfortunately it cannot be used since Claude does not support a knowledge base through the API.
+ */
 export class ClaudeAssistant {
     private anthropic: Anthropic;
     private history: Anthropic.MessageParam[] = [];
@@ -42,7 +47,7 @@ export class ClaudeAssistant {
         try {
             return JSON.parse(parsed) as AssistantResponse;
         } catch (e) {
-            console.error("Error parsing response", e);
+            logRed("Error parsing response", e);
             throw new Error("Invalid response from assistant: " + result);
         }
     }

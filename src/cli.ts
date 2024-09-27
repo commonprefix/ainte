@@ -8,6 +8,7 @@ import { spawnSync } from "child_process";
 import { writeFileSync } from "fs";
 import { markdownify, parseBashScript, stripAnsiCodes } from "./utils";
 import clipboard from "clipboardy";
+import { logGreen, logMagenta, logRed, logYellow } from "./logger";
 
 export class Cli {
     private static MAX_COMMAND_ATTEMPTS = 3;
@@ -73,12 +74,8 @@ export class Cli {
                 return;
             }
 
-            console.log(
-                chalk.redBright("Error running command:", result.error),
-                chalk.greenBright(
-                    `Will make attempt ${i + 1} of ${Cli.MAX_COMMAND_ATTEMPTS}`,
-                ),
-            );
+            logRed("Error running command:", result.error);
+            logGreen(`Will make attempt ${i + 1} of ${Cli.MAX_COMMAND_ATTEMPTS}`)
 
             // Ask assistant for a correction
             const correction = await this.assistant.correct(
@@ -89,14 +86,12 @@ export class Cli {
             this.logCommand(currentCommand);
         }
 
-        console.log(
-            chalk.redBright("Max attempts reached. Command execution failed."),
-        );
+        logRed("Max attempts reached. Command execution failed.");
     }
 
     private handleError(spinner: Ora, error: unknown): void {
         spinner.fail("Assistant failed to respond");
-        console.log(chalk.redBright(JSON.stringify(error)));
+        logRed(JSON.stringify(error));
     }
 
     /**
@@ -104,22 +99,22 @@ export class Cli {
      */
 
     private async logQuestion(result: string): Promise<void> {
-        console.log("\n" + chalk.magentaBright("Assistant has a question"));
+        logMagenta("Assistant has a question");
         console.log(result);
     }
 
     private async logRejection(result: string): Promise<void> {
-        console.log("\n" + chalk.redBright("Assistant rejected the command"));
+        logRed("Assistant rejected the command");
         console.log(result);
     }
 
     private async logUnknownResponse(result: string): Promise<void> {
-        console.log("\n" + chalk.yellowBright("Assistant broke character"));
+        logYellow("Assistant broke character");
         console.log(result);
     }
 
     private async logCommandResult(result: string): Promise<void> {
-        console.log("\n" + chalk.greenBright("Command result"));
+        logGreen("\nCommand result");
 
         spawnSync("less", ["-X", "-S"], {
             stdio: ["pipe", "inherit", "inherit"],
@@ -128,7 +123,7 @@ export class Cli {
     }
 
     private async logAnswer(result: string): Promise<void> {
-        console.log("\n" + chalk.greenBright("Assistant has an answer"));
+        logGreen("Assistant has an answer");
         spawnSync("glow", {
             stdio: ["pipe", "inherit", "inherit"],
             input: result,
@@ -137,9 +132,7 @@ export class Cli {
 
     private async logCommand(command: string) {
         const beautifulScript = parseBashScript(command);
-        console.log(
-            `\n${chalk.greenBright("Assistant wants to execute")}\n${beautifulScript}\n`,
-        );
+        logGreen(`Assistant wants to execute\n${beautifulScript}`);
     }
 
     /**
@@ -171,14 +164,14 @@ export class Cli {
     }
 
     private async tryMore(command: string): Promise<void> {
-        console.log(chalk.greenBright("Retrying command..."))
+        logGreen("Retrying command...");
         const correction = await this.assistant.correct(command, "The previous command failed");
         await this.handleCommand(correction.result);
     }
 
     private handleCopy(): void {
         const lastResponse = this.assistant.getLastOutput();
-        console.log(chalk.greenBright("Last answer copied to clipboard"));
+        logGreen("Last answer copied to clipboard");
         clipboard.writeSync(lastResponse);
     }
 
@@ -186,11 +179,11 @@ export class Cli {
         const history = await this.assistant.getHistory();
         const markdown = markdownify(history);
         writeFileSync("conversation.md", markdown);
-        console.log(chalk.greenBright("Conversation saved to conversation.md"));
+        logGreen("Conversation saved to conversation.md");
     }
 
     async handleExit(): Promise<void> {
-        console.log(chalk.greenBright("Bye!"));
+        logGreen("Bye!");
         process.exit(0);
     }
 
@@ -216,8 +209,7 @@ export class Cli {
      */
 
     private introMessage() {
-        console.log(
-            chalk.magentaBright(`
+        logMagenta(`
     █████╗  ██╗███╗   ██╗████████╗███████╗
     ██╔══██╗██║████╗  ██║╚══██╔══╝██╔════╝
     ███████║██║██╔██╗ ██║   ██║   █████╗
@@ -227,7 +219,6 @@ export class Cli {
 
 Welcome! Ask me anything related to Ethereum.
 Please be kind and patient, I'm just an experiment intersecting LLMs with Bash!
-            `),
-        );
+        `);
     }
 }

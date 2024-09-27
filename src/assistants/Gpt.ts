@@ -3,6 +3,7 @@ import { getPrompt, stripString } from "../utils";
 import type { AssistantResponse, MessageHistory } from "../types";
 import type { Assistant } from ".";
 import chalk from "chalk";
+import { logGreen, logRed } from "../logger";
 
 export default class GPTAssistant implements Assistant {
     private openai: OpenAI;
@@ -14,20 +15,13 @@ export default class GPTAssistant implements Assistant {
         this.openai = new OpenAI({ apiKey });
     }
 
-    async initSession(assistantName: string) {
-        // Uncomment to create new assistant from Prompt.MD if the assistant does not exist
-        //this.assistantId = await this.createAssistantIfNeeded(NAME)
-        const assistantId = await this.assistantExists(assistantName);
+    async initSession(assistantId: string) {
         if (!assistantId) {
             throw new Error("Assistant not found");
         }
-        console.log(
-            chalk.green(
-                `Initialized assistant with assistantId: ${assistantId} and name: ${assistantName}`,
-            ),
-        );
-        this.assistantId = assistantId;
+        logGreen(`Initialized assistant with id: ${assistantId}`);
 
+        this.assistantId = assistantId;
         const thread = await this.openai.beta.threads.create();
         this.threadId = thread.id;
     }
@@ -89,11 +83,7 @@ export default class GPTAssistant implements Assistant {
             });
         } catch (e: any) {
             // TODO: Fix error handling
-            console.log(
-                chalk.red(
-                    "Will not append output, because it is too long",
-                ),
-            );
+            logRed("Will not append output, because it is too long");
         }
     }
 
@@ -121,21 +111,4 @@ export default class GPTAssistant implements Assistant {
         return relevant ? relevant.id : null;
     }
 
-    private async createAssistantIfNeeded(name: string): Promise<string> {
-        const assistandId = await this.assistantExists(name);
-        if (assistandId) {
-            console.log("Assistant already exists", name);
-            return assistandId;
-        }
-
-        console.log("Creating new assistant with name", name);
-
-        const assistant = await this.openai.beta.assistants.create({
-            name,
-            instructions: getPrompt(),
-            model: "gpt-4o",
-        });
-
-        return assistant.id;
-    }
 }
