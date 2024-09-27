@@ -2,7 +2,7 @@ import inquirer from "inquirer";
 import ora, { type Ora } from "ora";
 import chalk from "chalk";
 import type { Assistant } from "./assistants";
-import { runCommand } from "./command";
+import { runShellScript } from "./bash";
 import type { AnswerType, AssistantResponse } from "./types";
 import { spawnSync } from "child_process";
 
@@ -12,6 +12,7 @@ export class Cli {
     constructor(private assistant: Assistant) {}
 
     async spawn(): Promise<void> {
+        this.introMessage();
         while (true) {
             const { userInput } = await inquirer.prompt([
                 {
@@ -52,13 +53,12 @@ export class Cli {
     }
 
     private async handleCommand(initialCommand: string): Promise<void> {
-        console.log("\n" + chalk.greenBright("Assistant wants to execute"));
         this.logCommand(initialCommand);
 
         let currentCommand = initialCommand;
 
         for (let i = 0; i < Cli.MAX_COMMAND_ATTEMPTS; i++) {
-            const result = await runCommand(currentCommand);
+            const result = await runShellScript(currentCommand);
             if (!result.error) {
                 await this.logCommandResult(result.output);
                 // Do not await this, it will block the main thread
@@ -68,8 +68,6 @@ export class Cli {
 
             console.log(
                 chalk.redBright("Error running command:", result.error),
-            );
-            console.log(
                 chalk.greenBright(
                     `Will make attempt ${i + 1} of ${Cli.MAX_COMMAND_ATTEMPTS}`,
                 ),
@@ -81,8 +79,6 @@ export class Cli {
                 result.error,
             );
             currentCommand = correction.result;
-
-            console.log(chalk.greenBright("Correction:"));
             this.logCommand(currentCommand);
         }
 
@@ -93,7 +89,7 @@ export class Cli {
 
     private async logAnswer(result: string): Promise<void> {
         console.log("\n" + chalk.greenBright("Assistant has an answer"));
-        this.runGlow(result);
+        this.logWithGlow(result);
     }
 
     private async logQuestion(result: string): Promise<void> {
@@ -113,10 +109,10 @@ export class Cli {
 
     private async logCommandResult(result: string): Promise<void> {
         console.log("\n" + chalk.greenBright("Command result"));
-        this.runLess(result);
+        this.logWithLess(result);
     }
 
-    // beautify bash command
+    // TODO: Use shfmt
     private async logCommand(command: string) {
         const beautifulScript = command
             .replace(/(curl)/g, chalk.cyan("$1")) // Highlighting 'curl' command
@@ -131,11 +127,13 @@ export class Cli {
             .replace(/;/g, ";\n") // Insert newlines after semicolons
             .replace(/\b(do|then)\b/g, "$1\n  ") // Indent after 'do' or 'then'
             .replace(/\bdone\b/g, "\n$&\n") // Newline before and after 'done'
-            .replace(/\n\s*(\b[a-zA-Z_]+\b)/g, "\n  $1"); // Indent other commands inside loops
+            .replace(/\n\s*(\b[a-zA-Z_]+\b)/g, "\n  $1") // Indent other commands inside loops
+            .replace(/\|/g, "\n|") // Add new line before pipes
+            .replace(/\n\|/g, "\n  |"); // Indent pipes
 
-        // Log the beautifully formatted Bash script
-        console.log(beautifulScript);
-        console.log("\n");
+        console.log(
+            `\n${chalk.greenBright("Assistant wants to execute")}\n${beautifulScript}\n`,
+        );
     }
 
     private handleError(spinner: Ora, error: unknown): void {
@@ -143,17 +141,33 @@ export class Cli {
         console.log(chalk.redBright(JSON.stringify(error)));
     }
 
-    public runLess(input: string) {
+    private logWithLess(input: string) {
         spawnSync("less", ["-X", "-S"], {
             stdio: ["pipe", "inherit", "inherit"],
             input: input,
         });
     }
 
-    public runGlow(input: string) {
+    private logWithGlow(input: string) {
         spawnSync("glow", {
             stdio: ["pipe", "inherit", "inherit"],
             input: input,
         });
+    }
+
+    private introMessage() {
+        console.log(
+            chalk.magentaBright(`
+    █████╗  ██╗███╗   ██╗████████╗███████╗
+    ██╔══██╗██║████╗  ██║╚══██╔══╝██╔════╝
+    ███████║██║██╔██╗ ██║   ██║   █████╗
+    ██╔══██║██║██║╚██╗██║   ██║   ██╔══╝
+    ██║  ██║██║██║ ╚████║   ██║   ███████╗
+    ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝   ╚═╝   ╚══════╝
+
+Welcome! Ask me anything related to Ethereum.
+Please be kind and patient, I'm just an experiment intersecting LLMs with Bash!
+            `),
+        );
     }
 }
