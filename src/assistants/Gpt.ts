@@ -1,9 +1,10 @@
 import OpenAI from "openai";
-import { getPrompt, stripString } from "../utils";
+import { stripString } from "../utils";
 import type { AssistantResponse, MessageHistory } from "../types";
 import type { Assistant } from ".";
 import chalk from "chalk";
-import { logGreen, logRed } from "../logger";
+import { logGreen, logRed, logYellow } from "../logger";
+import { GPTAssistantCreator } from "./GPTCreator";
 
 export default class GPTAssistant implements Assistant {
     private openai: OpenAI;
@@ -15,11 +16,14 @@ export default class GPTAssistant implements Assistant {
         this.openai = new OpenAI({ apiKey });
     }
 
-    async initSession(assistantId: string) {
+    async initSession(assistantId: string | undefined) {
         if (!assistantId) {
-            throw new Error("Assistant not found");
+            logYellow("No assistant id provided, creating a new assistant");
+            const creator = new GPTAssistantCreator(this.openai);
+            assistantId = await creator.create();
         }
-        logGreen(`Initialized assistant with id: ${assistantId}`);
+
+        logGreen(`Using assistant with id: ${assistantId}`);
 
         this.assistantId = assistantId;
         const thread = await this.openai.beta.threads.create();
@@ -110,5 +114,4 @@ export default class GPTAssistant implements Assistant {
         const relevant = assistants.data.filter((a) => a.name == name).pop();
         return relevant ? relevant.id : null;
     }
-
 }

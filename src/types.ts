@@ -1,3 +1,5 @@
+import fs from "fs";
+
 export type AnswerType = "command" | "answer" | "question" | "rejection";
 
 export type AssistantResponse = {
@@ -15,3 +17,5 @@ export type MessageHistory = {
     role: "user" | "assistant";
     content: string;
 }[];
+
+export type KnowledgeBase = Record<string, fs.ReadStream>
