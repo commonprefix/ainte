@@ -61,6 +61,27 @@ Apart from these basic functionalities, it also:
 * Rejects irrelevant questions.
 * Corrects itself when the command produced incorrect results.
 
+## Setting Up
+
+1. Make sure that you have bun, foundry, curl, jq and node v20 or higher installed.
+    - Install Node v20 or higher, because we're using `node --env-file` which we bet you didn't know it exists. 🙋🏼‍♀️
+    - For foundry: `curl -L https://foundry.paradigm.xyz | bash && foundryup`
+    - For the rest of the packages: 
+        - On MacOS with Homebrew: `brew install bun jq`
+        - On Debian/Ubuntu: `sudo apt install bun jq curl`
+2. Copy `.env.example` to `.env` and set your `OPENAI_API_KEY`.
+3. You can now run the tool with `bun run start`.
+
+Keep in mind that the first time you run the tool, it will create an OpenAI assistant and upload the knowledge base to it. Once the assistant is created put the assistant ID in the `.env` file, to avoid re-creating the assistant every time.
+
+### Docker
+
+1. As described above, copy the current `.env.example` to `.env` and set your `OPENAI_API_KEY`.
+2. Build the image with `docker build -t ainte .`
+3. Run the container with `docker run --rm -it ainte`
+
+Again, keep in mind that the first time you run the tool, it will create an OpenAI assistant. If you want to avoid recreating the assistant every time, put the assistant ID in the `.env` file and re-build the image.
+
 ## Usage
 
 The tool is currently implemented as a Command Line Interface (CLI) that provides a Read-Eval-Print Loop (REPL) for interacting by chat with the assistant. Additionally, the tool supports custom commands, which can be executed by prefixing them with the `/` character. These custom commands offer quick access to specific functionalities outside the normal conversation flow.
@@ -73,21 +94,15 @@ The tool is currently implemented as a Command Line Interface (CLI) that provide
 - `/save` - Saves the conversation to a file
 - `/copy` - Copies the last output to the clipboard
 
-## Installation (Docker)
+## Communicating with the assistant - Tips and tricks 🕵🏽‍♀️
 
-1. Copy .env.example to .env and set your `open_ai` key
-
-```bash
-docker build -t ainte .
-docker run --rm -it -e ASSISTANT_NAME=your-assistants-name ainte
-```
+- The assistant can maintain context from previous steps, allowing you to perform multi-step tasks without repetition.
+- To provide additional context, ask relevant questions before stating your main task. For example, instead of directly asking "Get me the calldata of this transaction for this contract," first inquire "What is the interface of this contract?" This approach ensures the assistant has the necessary information (like the ABI) in context before you request the calldata.
+- If the assistant makes a mistake that it cannot fix in the first iterations, use the `/retry` command to make it try again. You can also just rephrase the question, or ask it to "please fix the previous output".
 
 ## For contributors
-
-This project uses [Bun](https://bun.sh/) as the programming language and package manager. It is recommended to use Bun to run the project.
-
-```bash
-bun run dev
-```
-
 We'd love to get contributions from the community! Make sure to check the [issues](https://github.com/commonprefix/ainte/issues) and [pull requests](https://github.com/commonprefix/ainte/pulls) to see if there's anything you'd like to work on.
+
+Also, feel free to open issues while battling with the assistant or asking for new features.
+
+For more details about the codebase, or any suggestions reach out g
