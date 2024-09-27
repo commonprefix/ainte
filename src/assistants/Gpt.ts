@@ -8,6 +8,7 @@ export default class GPTAssistant implements Assistant {
     private openai: OpenAI;
     private assistantId?: string;
     private threadId?: string;
+    private outputs: string[] = [];
 
     constructor(apiKey: string) {
         this.openai = new OpenAI({ apiKey });
@@ -74,6 +75,8 @@ export default class GPTAssistant implements Assistant {
     }
 
     async appendOutput(output: string): Promise<void> {
+        this.outputs.push(output);
+
         if (!this.threadId) {
             throw new Error("Assistant not initialized");
         }
@@ -92,6 +95,10 @@ export default class GPTAssistant implements Assistant {
                 ),
             );
         }
+    }
+
+    getLastOutput(): string {
+        return this.outputs[this.outputs.length - 1];
     }
 
     private async assistantExists(name: string): Promise<string | null> {

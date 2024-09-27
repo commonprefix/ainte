@@ -65,6 +65,11 @@ export class ClaudeAssistant {
         });
     }
 
+    async getLastOutput(): Promise<string> {
+        // @ts-ignore
+        return this.history[this.history.length - 1].content[0].text;
+    }
+
     private pushToHistory(messageStr: string, from: "user" | "assistant") {
         this.history.push({
             role: from,

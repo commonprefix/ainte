@@ -5,11 +5,13 @@ import type { Assistant } from "./assistants";
 import { runShellScript } from "./bash";
 import type { AnswerType, AssistantResponse } from "./types";
 import { spawnSync } from "child_process";
+import type { CustomCommandProcessor } from "./customCommand";
+import { stripAnsiCodes } from "./utils";
 
 export class Cli {
     private static MAX_COMMAND_ATTEMPTS = 3;
 
-    constructor(private assistant: Assistant) {}
+    constructor(private assistant: Assistant, private customCommand: CustomCommandProcessor) {}
 
     async spawn(): Promise<void> {
         this.introMessage();
@@ -21,6 +23,12 @@ export class Cli {
                     message: "Ainte::",
                 } as any,
             ]);
+
+            if (await this.customCommand.isCustomCommand(userInput)) {
+                await this.customCommand.processCommand(userInput);
+                continue
+            }
+
             await this.handleRequest(userInput);
         }
     }
@@ -61,8 +69,7 @@ export class Cli {
             const result = await runShellScript(currentCommand);
             if (!result.error) {
                 await this.logCommandResult(result.output);
-                // Do not await this, it will block the main thread
-                this.assistant.appendOutput(result.output);
+                this.assistant.appendOutput(stripAnsiCodes(result.output)); // Do not await this, it will block the main thread
                 return;
             }
 

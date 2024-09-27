@@ -14,3 +14,7 @@ export function getEnv(key: string, _default?: string) {
 export function getPrompt(): string {
     return fs.readFileSync(PROMPT_FILE, "utf8");
 }
+
+export function stripAnsiCodes(output: string) {
+    return output.replace(/\u001b\[\d+;?\d*m/g, '');
+}
