@@ -89,11 +89,11 @@ The tool also supports custom commands, prefixed with /, for quick access to spe
 
 ## Setting Up
 
-1. Make sure that you have Node.js, Bun, Foundry, curl and jq installed.
+1. Make sure that you have Node.js, Bun, Foundry, curl and jq and glow installed.
     - For foundry: `curl -L https://foundry.paradigm.xyz | bash && foundryup`
     - For the rest of the packages: 
-        - On MacOS with Homebrew: `brew install node bun jq`
-        - On Debian/Ubuntu: `sudo apt install nodejs bun jq`
+        - On MacOS with Homebrew: `brew install node bun jq glow`
+        - On Debian/Ubuntu: `sudo apt install nodejs bun jq glow`
 2. Copy `.env.example` to `.env` and set your `OPENAI_API_KEY`.
 3. You can now run the tool with `bun run start`.
 
