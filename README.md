@@ -12,7 +12,7 @@ Ainte is a command line tool that allows you to interact with the Ethereum block
 
 ## Vision
 
-Interacting with blockchains is currently a complex process. There are two main methods: blockchain explorers and CLI tools. Explorers are great for basic tasks like calling getter functions or viewing simple transactions, but they're limited for more complex operations. On the other hand, CLI tools like Hardhat and Foundry are more powerful, but they can be cumbersome to use. This, the vision is to utilize the power of LLMs to interact with the Ethereum blockchain in a more natural and intuitive way.
+Interacting with blockchains is currently a complex process. There are two main methods: blockchain explorers and CLI tools. Explorers are great for basic tasks like calling getter functions or viewing simple transactions, but they're limited for more complex operations. On the other hand, CLI tools like Hardhat and Foundry are more powerful, but they can be cumbersome to use. The vision is to utilize the power of LLMs to interact with the Ethereum blockchain in a more natural and intuitive way.
 
 Hopefully, this tool can evolve to a one-stop-shop for the blockchain needs of any developer for both everyday tasks like deploying contracts and decoding transactions, as well as more complex tasks like telemetry data analysis and contract fuzzing.
 
