@@ -66,12 +66,11 @@ Apart from these basic functionalities, it also:
 
 ## Setting Up
 
-1. Make sure that you have bun, foundry, curl, jq and node v20 or higher installed.
-    - Install Node v20 or higher, because we were borded to install `dotenv` and we're using `node --env-file` which we bet you didn't know it exists. 🙋🏼‍♀️
+1. Make sure that you have Node.js, Bun, Foundry, curl and jq installed.
     - For foundry: `curl -L https://foundry.paradigm.xyz | bash && foundryup`
     - For the rest of the packages: 
-        - On MacOS with Homebrew: `brew install bun jq`
-        - On Debian/Ubuntu: `sudo apt install bun jq curl`
+        - On MacOS with Homebrew: `brew install node bun jq`
+        - On Debian/Ubuntu: `sudo apt install nodejs bun jq`
 2. Copy `.env.example` to `.env` and set your `OPENAI_API_KEY`.
 3. You can now run the tool with `bun run start`.
 

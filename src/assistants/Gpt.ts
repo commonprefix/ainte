@@ -2,7 +2,6 @@ import OpenAI from "openai";
 import { stripString } from "../utils";
 import type { AssistantResponse, MessageHistory } from "../types";
 import type { Assistant } from ".";
-import chalk from "chalk";
 import { logGreen, logRed, logYellow } from "../logger";
 import { GPTAssistantCreator } from "./GPTCreator";
 
@@ -16,7 +15,7 @@ export default class GPTAssistant implements Assistant {
         this.openai = new OpenAI({ apiKey });
     }
 
-    async initSession(assistantId: string | undefined) {
+    async initSession(assistantId?: string) {
         if (!assistantId) {
             logYellow("No assistant id provided, creating a new assistant");
             const creator = new GPTAssistantCreator(this.openai);

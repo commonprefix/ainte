@@ -1,13 +1,17 @@
+import dotenv from 'dotenv';
 import chalk from "chalk";
 import type { MessageHistory } from "./types";
 
-export function getEnv(key: string, _default?: string) {
+dotenv.config();
+
+export function getEnv(key: string, _default?: string | null) {
     const value = process.env[key];
-    if (!value && !_default) {
+    if (!value && !_default && _default !== null) {
         throw new Error(`Missing environment variable ${key}. Please set it in the .env file.`);
     }
     return value || _default || "";
 }
+
 export function stripAnsiCodes(output: string) {
     return output.replace(/\u001b\[\d+;?\d*m/g, '');
 }
