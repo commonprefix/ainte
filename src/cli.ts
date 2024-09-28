@@ -12,6 +12,7 @@ import { logGreen, logMagenta, logRed, logYellow } from "./logger";
 
 export class Cli {
     private static MAX_COMMAND_ATTEMPTS = 3;
+    private shouldConfirmCmd = false;
 
     constructor(private assistant: Assistant) {}
 
@@ -67,6 +68,10 @@ export class Cli {
         let currentCommand = initialCommand;
 
         for (let i = 0; i < Cli.MAX_COMMAND_ATTEMPTS; i++) {
+            if (this.shouldConfirmCmd && !(await this.confirmCommand(currentCommand))) {
+                return
+            }
+
             const result = await runShellScript(currentCommand);
             if (!result.error) {
                 await this.logCommandResult(result.output);
@@ -93,6 +98,18 @@ export class Cli {
         spinner.fail("Assistant failed to respond");
         logRed(JSON.stringify(error));
     }
+
+    private async confirmCommand(command: string): Promise<boolean> {
+        logYellow("Do you want to proceed with this command?")
+        const { proceed } = await inquirer.prompt({
+            type: "confirm",
+            name: "proceed",
+            message: "Do you want to proceed?" as any,
+        })
+
+        return proceed;
+    }
+
 
     /**
      * Loggers
@@ -141,6 +158,12 @@ export class Cli {
 
     async handleCustomCommand(input: string): Promise<boolean> {
         switch (input) {
+            case "/confirm":
+                this.enableCMDConfirmation();
+                return true;
+            case "/noconfirm":
+                this.disableCMDConfirmation();
+                return true;
             case "/cmd":
             case "/commands":
             case "/menu":
@@ -163,10 +186,18 @@ export class Cli {
         }
     }
 
-    private async tryMore(command: string): Promise<void> {
+    private async tryMore(command: string) {
         logGreen("Retrying command...");
         const correction = await this.assistant.correct(command, "The previous command failed");
         await this.handleCommand(correction.result);
+    }
+
+    private enableCMDConfirmation() {
+        this.shouldConfirmCmd = true;
+    }
+
+    private disableCMDConfirmation() {
+        this.shouldConfirmCmd = false;
     }
 
     private handleCopy(): void {
