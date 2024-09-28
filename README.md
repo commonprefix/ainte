@@ -84,6 +84,8 @@ The tool also supports custom commands, prefixed with /, for quick access to spe
 - `/retry` - Keeps trying to fix the previous commands 3 times in case of error
 - `/save` - Saves the conversation to a file
 - `/copy` - Copies the last output to the clipboard
+- `/confirm` - Enables confirmation prompts before executing commands for our cautious friends
+- `/noconfirm` - Disables confirmation prompts for the brave (the default is being brave)
 
 ## Setting Up
 
