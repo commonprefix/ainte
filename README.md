@@ -109,7 +109,7 @@ We'd love to get contributions from the community! Make sure to check the [issue
 
 Needless to say, issues and PRs are more than welcome!
 
-Finally, feel free to join our [telegram group](https://t.me/aintecli) where all the fun will be happening, or reach out to us on [X](https://x.com/commonprefix) if you have any questions! 🚀
+Finally, feel free to join our [telegram group](https://t.me/+J1Z4RjcOZS9kMmY0) where all the fun will be happening, or reach out to us on [X](https://x.com/commonprefix) if you have any questions! 🚀
 
 ## Acknowledgements
 
