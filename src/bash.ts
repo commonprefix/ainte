@@ -1,7 +1,7 @@
 import { spawn } from "child_process";
 import type { CommandResult } from "./types";
 
-export function runShellScript(command: string): Promise<CommandResult> {
+export function runShellScript(command: string, log: boolean = false): Promise<CommandResult> {
     return new Promise((resolve, reject) => {
         const childProcess = spawn("/bin/sh", ["-c", command]);
         let stdout = "";
@@ -9,10 +9,16 @@ export function runShellScript(command: string): Promise<CommandResult> {
 
         childProcess.stdout.on("data", (data: Buffer) => {
             stdout += data.toString();
+            if (log) {
+                console.log(stdout);
+            }
         });
 
         childProcess.stderr.on("data", (data: Buffer) => {
             stderr += data.toString();
+            if (log) {
+                console.error(stderr);
+            }
         });
 
         childProcess.on("close", (code: number) => {
