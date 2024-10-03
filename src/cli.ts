@@ -10,6 +10,8 @@ import { markdownify, parseBashScript, stripAnsiCodes } from "./utils";
 import clipboard from "clipboardy";
 import { logGreen, logMagenta, logRed, logYellow } from "./logger";
 
+const MIN_ROW_SIZE_FOR_LESS = 50;
+
 export class Cli {
     private static MAX_COMMAND_ATTEMPTS = 3;
     private shouldConfirmCmd = false;
@@ -131,7 +133,14 @@ export class Cli {
     }
 
     private async logCommandResult(result: string): Promise<void> {
+        let resultLines = result.split("\n").length;
+
         logGreen("\nCommand result");
+
+        if (resultLines < MIN_ROW_SIZE_FOR_LESS) {
+            console.log(result)
+            return
+        }
 
         spawnSync("less", ["-X", "-S"], {
             stdio: ["pipe", "inherit", "inherit"],
