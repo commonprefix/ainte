@@ -95,7 +95,8 @@ The tool also supports custom commands, prefixed with /, for quick access to spe
         - On MacOS with Homebrew: `brew install node oven-sh/bun/bun jq glow`
         - On Debian/Ubuntu: `sudo apt install nodejs jq glow && curl -fsSL https://bun.sh/install | bash`
 2. Copy `.env.example` to `.env` and set your `OPENAI_API_KEY`.
-3. You can now run the tool with `bun run start`.
+3. Install the dependencies with `bun install`
+4. You can now run the tool with `bun run start`.
 
 Keep in mind that the first time you run the tool, it will create an OpenAI assistant and upload the knowledge base to it. Once the assistant is created, put the assistant ID in the `.env` file, to avoid re-creating the assistant every time.
 
